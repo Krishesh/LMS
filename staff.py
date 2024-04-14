@@ -123,7 +123,8 @@ def list_borrowed_books():
                 if book["id"] == borrow["book_id"]:
                     for member in members:
                         if member["id"] == borrow["member_id"]:
-                            print("{:<5} {:<30} {:<20} {:<15} {:<10}".format(book["id"], book["title"], book["author"], member["name"], member["id"]))
+                            print("{:<5} {:<30} {:<20} {:<15} {:<10}".format(book["id"], book["title"], book["author"],
+                                                                             member["name"], member["id"]))
                             break
                     break
     else:
@@ -226,6 +227,8 @@ def receive_returned_book(book_id):
 
     write_data(books, BOOKS_FILE)
 
+
+# Function to list all Members
 def list_all_members():
     members = read_data(MEMBERS_FILE)
     if members:
@@ -237,6 +240,7 @@ def list_all_members():
         print("No members found.")
 
 
+# Function to book summary
 def book_summary():
     books = read_data(BOOKS_FILE)
     total_books = len(books)
@@ -266,6 +270,7 @@ def book_summary():
             print("No reservations found for this book.")
 
 
+# Function to list all reservation
 def list_all_reservation_books():
     reservations = read_data(RESERVATIONS_FILE)
     books = read_data(BOOKS_FILE)
@@ -289,6 +294,56 @@ def list_all_reservation_books():
         print("No reservations found.")
 
 
+# Function to reservation to borrow
+def convert_reservation_to_borrow(book_id, member_id):
+    # Check if the book is available
+    books = read_data(BOOKS_FILE)
+    book = next((book for book in books if book["id"] == book_id), None)
+    if book is None:
+        print("Book not found.")
+        return
+
+    if not book["available"]:
+        print("Book is not available for borrowing.")
+        return
+
+    # Check if the member has already borrowed the same book
+    borrows = read_data(BORROWS_FILE)
+    if any(borrow["book_id"] == book_id and borrow["member_id"] == member_id for borrow in borrows):
+        print("You have already borrowed this book.")
+        return
+
+    # Remove the reservation record
+    reservations = read_data(RESERVATIONS_FILE)
+    reservations = [reservation for reservation in reservations if
+                    reservation["book_id"] != book_id or reservation["member_id"] != member_id]
+    write_data(reservations, RESERVATIONS_FILE)
+
+    # Add a new borrow record
+    borrow_record = {"book_id": book_id, "member_id": member_id}
+    borrows.append(borrow_record)
+    write_data(borrows, BORROWS_FILE)
+
+    # Update the book availability
+    book["available"] = False
+    write_data(books, BOOKS_FILE)
+
+    print("Book borrowed successfully.")
+
+
+# Function to delete reservation
+def delete_reservation(book_id, member_id):
+    # Remove the reservation record
+    reservations = read_data(RESERVATIONS_FILE)
+    updated_reservations = [reservation for reservation in reservations if
+                            reservation["book_id"] != book_id or reservation["member_id"] != member_id]
+    if len(reservations) == len(updated_reservations):
+        print("Reservation not found.")
+    else:
+        write_data(updated_reservations, RESERVATIONS_FILE)
+        print("Reservation deleted successfully.")
+
+
 # Main function for customer application
 def customer_main():
     print("Welcome to LMS STAFF Application")
@@ -308,9 +363,11 @@ def customer_main():
         print("8. List available books")
         print("9. List reservation books")
         print("10. List Borrowed books")
+        print("11. Reservation to  Borrowed books")
+        print("12. Delete Reservation")
         print("******------******")
-        print("11. View book summary")
-        print("12. Exit")
+        print("13. View book summary")
+        print("14. Exit")
 
         choice = input("Enter your choice: ")
 
@@ -379,9 +436,19 @@ def customer_main():
             list_borrowed_books()
 
         elif choice == "11":
-            book_summary()
+            book_id = int(input("Enter book ID to borrow: "))
+            member_id = int(input("Enter your member ID: "))  # Assuming customer has a member ID
+            convert_reservation_to_borrow(book_id, member_id)
 
         elif choice == "12":
+            book_id = int(input("Enter book ID to borrow: "))
+            member_id = int(input("Enter your member ID: "))  # Assuming customer has a member ID
+            delete_reservation(book_id, member_id)
+
+        elif choice == "13":
+            book_summary()
+
+        elif choice == "14":
             print("Exiting Customer Application...")
             break
 
