@@ -349,39 +349,47 @@ def customer_main():
     print("Welcome to LMS STAFF Application")
 
     while True:
-        print("\nSelect an option:")
         print("******------******")
-        print("1. Search for books")
-        print("2. Customer Borrow / Reservation book")
-        print("3. Receive returned book")
+        print("Select an option:")
         print("******------******")
-        print("4. Manage books")
-        print("5. Manage members")
+        print("{:<5} {:<25}".format("Option", "Description"))
         print("******------******")
-        print("6. List all books")
-        print("7. List all members")
-        print("8. List available books")
-        print("9. List reservation books")
-        print("10. List Borrowed books")
-        print("11. Reservation to  Borrowed books")
-        print("12. Delete Reservation")
+        options = [
+            ("1.", "Search for books"),
+            ("2.", "Customer Borrow / Reservation book"),
+            ("3.", "Receive returned book"),
+            ("4.", "Manage books"),
+            ("5.", "Manage members"),
+            ("6.", "List all books"),
+            ("7.", "List all members"),
+            ("8.", "List available books"),
+            ("9.", "List reservation books"),
+            ("10.", "List Borrowed books"),
+            ("11.", "Reservation to Borrowed books"),
+            ("12.", "Delete Reservation"),
+            ("13.", "View book summary"),
+            ("14.", "Exit")
+        ]
+        for option in options:
+            print("{:<5} {:<25}".format(option[0], option[1]))
         print("******------******")
-        print("13. View book summary")
-        print("14. Exit")
 
         choice = input("Enter your choice: ")
 
         if choice == "1":
             keyword = input("Enter keyword to search for books: ")
+            print("******------******")
             search_books(keyword)
 
         elif choice == "2":
             book_id = int(input("Enter book ID to borrow: "))
             member_id = int(input("Enter your member ID: "))  # Assuming customer has a member ID
+            print("******------******")
             borrow_or_reserve_book(book_id, member_id)
 
         elif choice == "3":
             book_id = int(input("Enter book ID to mark as returned: "))
+            print("******------******")
             receive_returned_book(book_id)
 
         elif choice == "4":
@@ -401,6 +409,7 @@ def customer_main():
             else:
                 print("Invalid action.")
                 continue
+            print("******------******")
             manage_books(action, book_info)
 
         elif choice == "5":
@@ -418,6 +427,7 @@ def customer_main():
             else:
                 print("Invalid action.")
                 continue
+            print("******------******")
             manage_members(action, member_info)
 
         elif choice == "6":
@@ -438,11 +448,13 @@ def customer_main():
         elif choice == "11":
             book_id = int(input("Enter book ID to borrow: "))
             member_id = int(input("Enter your member ID: "))  # Assuming customer has a member ID
+            print("******------******")
             convert_reservation_to_borrow(book_id, member_id)
 
         elif choice == "12":
             book_id = int(input("Enter book ID to borrow: "))
             member_id = int(input("Enter your member ID: "))  # Assuming customer has a member ID
+            print("******------******")
             delete_reservation(book_id, member_id)
 
         elif choice == "13":
